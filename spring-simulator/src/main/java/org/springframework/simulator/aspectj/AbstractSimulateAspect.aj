@@ -5,19 +5,26 @@ import org.aspectj.lang.annotation.SuppressAjWarnings;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.simulator.LoggerService;
+import org.springframework.simulator.RecordedMethodLoggerSupport;
 import org.springframework.simulator.RecordedMethod;
 import org.springframework.simulator.RecordedMethodLogger;
 import org.springframework.simulator.SimulationMode;
 
 /**
- * Created by gman on 7/01/16.
+ * Base Aspect for simulation support. Depending on the current {@link SimulationMode} the advice
+ * wraps the method and either records the method invocation details ({@link SimulationMode#isRecording()})
+ * using a {@link RecordedMethodLogger} or replays the recorded data ({@link SimulationMode#isSimulating()})
+ * by calling the concrete Aspect.
+ *
+ * @author gman
+ * @see SimulationMode
+ * @see RecordedMethodLogger
  */
 public abstract aspect AbstractSimulateAspect {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractSimulateAspect.class);
 
-    protected LoggerService loggerService;
+    protected RecordedMethodLoggerSupport recordedMethodLoggerSupport;
     protected SimulationMode simulationMode;
 
     @SuppressAjWarnings("adviceDidNotMatch")
@@ -27,14 +34,14 @@ public abstract aspect AbstractSimulateAspect {
 
         Object result = null;
 
-        String key = loggerService.getKey(pjp.getTarget().getClass(), pjp.getSignature().getName(), pjp.getArgs());
+        String key = recordedMethodLoggerSupport.getKey(pjp.getTarget().getClass(), pjp.getSignature().getName(), pjp.getArgs());
         try {
-            if (simulationMode.isSimulating() && methodSignature.getReturnType() != Void.class) {
+            if (simulationMode.isSimulating()) {
                 result = replay(key, methodSignature, pjp);
             } else if (simulationMode.isRecording()) {
 
                 result = pjp.proceed();
-                RecordedMethodLogger logger = loggerService.getLogger(key);
+                RecordedMethodLogger logger = recordedMethodLoggerSupport.getLogger(key);
                 RecordedMethod call = new RecordedMethod(result, key, pjp.getArgs());
                 logger.log(call);
             } else {
@@ -54,8 +61,8 @@ public abstract aspect AbstractSimulateAspect {
 
     public abstract Object replay(String key, MethodSignature methodSignature, ProceedingJoinPoint pjp) throws Throwable;
 
-    public void setLoggerService(LoggerService loggerService) {
-        this.loggerService = loggerService;
+    public void setRecordedMethodLoggerSupport(RecordedMethodLoggerSupport recordedMethodLoggerSupport) {
+        this.recordedMethodLoggerSupport = recordedMethodLoggerSupport;
     }
 
     public void setSimulationMode(SimulationMode simulationMode) {

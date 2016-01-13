@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.core.BridgeMethodResolver;
-import org.springframework.simulator.annotation.Simulate;
 import org.springframework.simulator.annotation.SimulateResult;
 import org.springframework.util.ClassUtils;
 
@@ -15,11 +14,13 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 /**
- * Created by gman on 11/01/16.
+ *
+ *
+ * @author Gman
  */
-public class LoggerService {
+public class RecordedMethodLoggerSupport {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LoggerService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RecordedMethodLoggerSupport.class);
 
     private Map<String, RecordedMethodLogger> loggerCache = new HashMap<>();
 
@@ -115,7 +116,7 @@ public class LoggerService {
 
         if (result == null) {
             LOGGER.info("No result captured for " + key + " with args: " + recordedArgs);
-            if (simulateResult.getClass().isAnnotationPresent(Simulate.class) && simulateResult.getClass().getAnnotation(Simulate.class).mockIfNotAvailable()) {
+            if (simulateResult.mockIfNotAvailable()) {
                 LOGGER.warn("Capture.mockIfNotAvailable() not yet implemented.");
             }
         }

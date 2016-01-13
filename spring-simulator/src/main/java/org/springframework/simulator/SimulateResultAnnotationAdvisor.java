@@ -7,18 +7,23 @@ import org.springframework.aop.support.annotation.AnnotationMatchingPointcut;
 import org.springframework.simulator.annotation.SimulateResult;
 
 /**
- * Created by gman on 6/01/16.
+ * Advisor that activates simulation through the {@link SimulateResult @SimulateResult}
+ * annotation at the method level.
+ *
+ * @author Gman
+ * @see SimulateResult
+ * @see SimulateResultAnnotationInterceptor
  */
 public class SimulateResultAnnotationAdvisor extends AbstractPointcutAdvisor {
 
     private Pointcut pointcut;
     private Advice advice;
 
-    private LoggerService loggerService;
+    private RecordedMethodLoggerSupport recordedMethodLoggerSupport;
     private SimulationMode simulationMode;
 
-    public SimulateResultAnnotationAdvisor(LoggerService loggerService, SimulationMode simulationMode) {
-        this.loggerService = loggerService;
+    public SimulateResultAnnotationAdvisor(RecordedMethodLoggerSupport recordedMethodLoggerSupport, SimulationMode simulationMode) {
+        this.recordedMethodLoggerSupport = recordedMethodLoggerSupport;
         this.simulationMode = simulationMode;
     }
 
@@ -39,7 +44,7 @@ public class SimulateResultAnnotationAdvisor extends AbstractPointcutAdvisor {
     }
 
     protected void buildAdvice() {
-        advice = new SimulateResultAnnotationInterceptor(loggerService, simulationMode);
+        advice = new SimulateResultAnnotationInterceptor(recordedMethodLoggerSupport, simulationMode);
     }
 
     protected void buildPointcut() {

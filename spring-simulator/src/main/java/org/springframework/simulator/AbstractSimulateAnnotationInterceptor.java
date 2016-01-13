@@ -5,15 +5,23 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.core.Ordered;
 
 /**
- * Created by gman on 6/01/16.
+ * AOP Alliance {@code MethodInterceptor} that processes method invocations
+ * by either recording them or replaying them depending on the {@link SimulationMode}.
+ * *
+ * @author Gman
+ * @see SimulationMode
+ * @see org.springframework.simulator.annotation.SimulateCall
+ * @see org.springframework.simulator.annotation.SimulateResult
+ * @see SimulateCallAnnotationInterceptor
+ * @see SimulateResultAnnotationInterceptor
  */
 public abstract class AbstractSimulateAnnotationInterceptor implements MethodInterceptor, Ordered {
 
-    protected LoggerService loggerService;
+    protected RecordedMethodLoggerSupport recordedMethodLoggerSupport;
     protected SimulationMode simulationMode;
 
-    public AbstractSimulateAnnotationInterceptor(LoggerService loggerService, SimulationMode simulationMode) {
-        this.loggerService = loggerService;
+    public AbstractSimulateAnnotationInterceptor(RecordedMethodLoggerSupport recordedMethodLoggerSupport, SimulationMode simulationMode) {
+        this.recordedMethodLoggerSupport = recordedMethodLoggerSupport;
         this.simulationMode = simulationMode;
     }
 
@@ -24,8 +32,8 @@ public abstract class AbstractSimulateAnnotationInterceptor implements MethodInt
             result = replay(invocation);
         } else if (simulationMode.isRecording()) {
             result = invocation.proceed();
-            String key = loggerService.getKey(invocation);
-            RecordedMethodLogger logger = loggerService.getLogger(key);
+            String key = recordedMethodLoggerSupport.getKey(invocation);
+            RecordedMethodLogger logger = recordedMethodLoggerSupport.getLogger(key);
             RecordedMethod recordedMethod = new RecordedMethod(result, key, invocation.getArguments());
             logger.log(recordedMethod);
         } else {

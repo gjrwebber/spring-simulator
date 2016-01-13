@@ -1,17 +1,22 @@
 package org.springframework.simulator.aspectj;
 
 /**
- * Created by gman on 7/01/16.
+ * Concrete Aspect for {@link org.springframework.simulator.annotation.SimulateResult @SimulateResult} simulation support.
+ * It sets the {@code pointcut} to include executions of methods with {@code Object} return type annotated with
+ * {@link org.springframework.simulator.annotation.SimulateResult @SimulateResult}.
+ *
+ * @author gman
+ * @see org.springframework.simulator.annotation.SimulateCall
  */
 public aspect SimulateResultAnnotationAspect extends AbstractSimulateResultAspect {
 
-    private pointcut captureResultMarkedMethod(): execution(@CaptureResult (java.lang.Object) *(..));
+    private pointcut simulateResultMarkedMethod(): execution(@SimulateResult * *(..));
 
-    public pointcut simulation(): captureResultMarkedMethod();
+    public pointcut simulation(): simulateResultMarkedMethod();
 
     declare error:
-            execution(@CaptureResult (java.lang.Object) *(..)):
-            "Only methods that return something may have a @CaptureResult annotation";
+            execution(@SimulateResult * *(..)):
+            "Only methods that return something may have a @SimulateResult annotation";
 
 
 }

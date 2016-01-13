@@ -2,19 +2,23 @@ package org.springframework.simulator.annotation;
 
 import org.springframework.context.annotation.AdviceMode;
 import org.springframework.context.annotation.AdviceModeImportSelector;
-import org.springframework.scheduling.annotation.ProxyAsyncConfiguration;
+import org.springframework.simulator.aspectj.AspectjSimulateConfiguration;
 
 /**
- * Created by gman on 7/01/16.
+ * Selects which implementation of {@link AbstractSimulationConfiguration} should be used based
+ * on the value of {@link EnableSimulation#mode} on the importing {@code @Configuration} class.
+ *
+ * @author Gman
+ * @see EnableSimulation
+ * @see ProxySimulationConfiguration
+ * @see AspectjSimulateConfiguration
  */
 public class SimulationConfigurationSelector extends AdviceModeImportSelector<EnableSimulation> {
-
-    private static final String SIMULATION_EASPECT_CONFIGURATION_CLASS_NAME = "org.gw.delorian.aspectj.AspectjSimulationConfiguration";
 
     /**
      * {@inheritDoc}
      *
-     * @return {@link ProxyAsyncConfiguration} or {@code AspectJAsyncConfiguration} for
+     * @return {@link ProxySimulationConfiguration} or {@code AspectjSimulateConfiguration} for
      * {@code PROXY} and {@code ASPECTJ} values of {@link EnableSimulation#mode()}, respectively
      */
     @Override
@@ -23,9 +27,9 @@ public class SimulationConfigurationSelector extends AdviceModeImportSelector<En
         case PROXY:
             return new String[]{ ProxySimulationConfiguration.class.getName() };
         case ASPECTJ:
-            return new String[]{ SIMULATION_EASPECT_CONFIGURATION_CLASS_NAME };
+            return new String[]{ AspectjSimulateConfiguration.class.getName() };
         default:
-            return null;
+            throw new IllegalStateException("Unknown AdviceMode " + adviceMode + ". Expected one of PROXY or ASPECTJ.");
         }
     }
 

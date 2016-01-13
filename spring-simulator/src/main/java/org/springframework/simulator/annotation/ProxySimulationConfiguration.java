@@ -10,7 +10,11 @@ import org.springframework.simulator.SimulateResultAnnotationBeanPostProcessor;
 import org.springframework.util.Assert;
 
 /**
- * Created by gman on 7/01/16.
+ * Concrete {@code Configuration} class uses proxying for enhancing beans for
+ * Spring's simulated execution capability.
+ *
+ * @author Gman
+ * @see EnableSimulation
  */
 @Configuration
 public class ProxySimulationConfiguration extends AbstractSimulationConfiguration implements EnvironmentAware {

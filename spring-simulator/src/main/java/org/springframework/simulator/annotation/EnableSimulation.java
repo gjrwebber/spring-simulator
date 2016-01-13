@@ -10,7 +10,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Created by gman on 7/01/16.
+ * Annotation used to enable Spring's simulated execution capability.
+ *
+ * @author Gman
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -23,7 +25,9 @@ public @interface EnableSimulation {
      * Applicable only if {@link #mode()} is set to {@link AdviceMode#PROXY}</strong>.
      * <p>
      * <p>Note that setting this attribute to {@code true} will affect <em>all</em>
-     * Spring-managed beans requiring proxying, not just those marked with {@code @Async}.
+     * Spring-managed beans requiring proxying, not just those marked with {@code @SimulateCall}
+     * or {@code SimulateResult}.
+     * <p>
      * For example, other beans marked with Spring's {@code @Transactional} annotation
      * will be upgraded to subclass proxying at the same time. This approach has no
      * negative impact in practice unless one is explicitly expecting one type of proxy
@@ -32,7 +36,7 @@ public @interface EnableSimulation {
     boolean proxyTargetClass() default false;
 
     /**
-     * Indicate how async advice should be applied. The default is
+     * Indicate how simulation advice should be applied. The default is
      * {@link AdviceMode#PROXY}.
      *
      * @see AdviceMode
@@ -41,7 +45,7 @@ public @interface EnableSimulation {
 
     /**
      * Indicate the order in which the
-     * {@link org.springframework.scheduling.annotation.AsyncAnnotationBeanPostProcessor}
+     * {@link org.springframework.simulator.AbstractSimulateBeanPostProcessor}
      * should be applied. The default is {@link Ordered#LOWEST_PRECEDENCE} in order to run
      * after all other post-processors, so that it can add an advisor to
      * existing proxies rather than double-proxy.

@@ -10,8 +10,7 @@ import org.springframework.context.annotation.ImportAware;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.scheduling.annotation.AsyncConfigurer;
-import org.springframework.simulator.LoggerService;
+import org.springframework.simulator.RecordedMethodLoggerSupport;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
@@ -44,7 +43,7 @@ public class AbstractSimulationConfiguration implements ImportAware, Environment
     }
 
     /**
-     * Collect any {@link AsyncConfigurer} beans through autowiring.
+     * Collect any {@link SimulationConfigurer} beans through autowiring.
      */
     @Autowired(required = false)
     void setConfigurers(Collection<SimulationConfigurer> configurers) {
@@ -59,8 +58,8 @@ public class AbstractSimulationConfiguration implements ImportAware, Environment
     }
 
     @Bean
-    protected LoggerService loggerService() {
-        return new LoggerService();
+    protected RecordedMethodLoggerSupport loggerService() {
+        return new RecordedMethodLoggerSupport();
     }
 
     @Bean

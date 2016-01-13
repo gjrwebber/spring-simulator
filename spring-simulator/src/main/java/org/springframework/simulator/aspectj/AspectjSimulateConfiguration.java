@@ -6,9 +6,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
 import org.springframework.simulator.SimulationMode;
 import org.springframework.simulator.annotation.AbstractSimulationConfiguration;
+import org.springframework.simulator.annotation.EnableSimulation;
 
 /**
- * Created by gman on 7/01/16.
+ * Concrete {@code Configuration} class uses AspectJ for enhancing beans for
+ * Spring's simulated execution capability.
+ *
+ * @author Gman
+ * @see EnableSimulation
  */
 @Configuration
 public class AspectjSimulateConfiguration extends AbstractSimulationConfiguration {
@@ -17,7 +22,7 @@ public class AspectjSimulateConfiguration extends AbstractSimulationConfiguratio
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     public SimulateCallAnnotationAspect simulateCallAdvisor() {
         SimulateCallAnnotationAspect simulateCallAspect = SimulateCallAnnotationAspect.aspectOf();
-        simulateCallAspect.setLoggerService(loggerService());
+        simulateCallAspect.setRecordedMethodLoggerSupport(loggerService());
         simulateCallAspect.setSimulationMode(SimulationMode.fromEnvironment(environment));
         return simulateCallAspect;
     }
@@ -26,7 +31,7 @@ public class AspectjSimulateConfiguration extends AbstractSimulationConfiguratio
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     public SimulateResultAnnotationAspect simulateResultAdvisor() {
         SimulateResultAnnotationAspect simulateResultAspect = SimulateResultAnnotationAspect.aspectOf();
-        simulateResultAspect.setLoggerService(loggerService());
+        simulateResultAspect.setRecordedMethodLoggerSupport(loggerService());
         simulateResultAspect.setSimulationMode(SimulationMode.fromEnvironment(environment));
         return simulateResultAspect;
     }

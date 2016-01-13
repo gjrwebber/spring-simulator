@@ -4,11 +4,15 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.simulator.annotation.Simulate;
 import org.springframework.simulator.annotation.SimulateResult;
 
 /**
- * Created by gman on 7/01/16.
+ * Base Aspect for {@link org.springframework.simulator.annotation.SimulateResult @SimulateResult} simulation support. This
+ * simulation method replays the result previously recorded. As many results could've been recorded for set
+ * of arguments, the actual result returned is selected based on the {@link SimulateResult#returnAlgorithm()}.
+ *
+ * @author Gman
+ * @see org.springframework.simulator.annotation.SimulateCall
  */
 public abstract aspect AbstractSimulateResultAspect extends AbstractSimulateAspect {
 
@@ -23,11 +27,11 @@ public abstract aspect AbstractSimulateResultAspect extends AbstractSimulateAspe
 
         SimulateResult simulateResult = methodSignature.getMethod().getDeclaredAnnotation(SimulateResult.class);
         Object result = null;
-        if (loggerService.isLogger(key)) {
-            result = loggerService.getResult(pjp.getArgs(), simulateResult, key);
+        if (recordedMethodLoggerSupport.isLogger(key)) {
+            result = recordedMethodLoggerSupport.getResult(pjp.getArgs(), simulateResult, key);
         }
 
-        if (result == null && simulateResult.getClass().getDeclaredAnnotation(Simulate.class).mockIfNotAvailable()) {
+        if (result == null && simulateResult.mockIfNotAvailable()) {
             LOGGER.warn("CaptureResult.mockIfNotAvailable() not yet implemented.");
         }
 
