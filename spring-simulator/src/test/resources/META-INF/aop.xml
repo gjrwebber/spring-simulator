@@ -1,0 +1,17 @@
+<!DOCTYPE aspectj PUBLIC "-//AspectJ//DTD//EN" "http://www.eclipse.org/aspectj/dtd/aspectj.dtd">
+<aspectj>
+
+    <weaver options="-showWeaveInfo -verbose -Xset:weaveJavaxPackages=true">
+        <exclude within="*CGLIB*" />
+        <include within="org.gw.delorian..*" />
+
+        <include within="org.gw.delorian.CapturedMethodAspect" />
+        <include within="org.gw.delorian.RecordedMethodAspect" />
+    </weaver>
+
+    <aspects>
+        <aspect name="org.gw.delorian.CapturedMethodAspect" />
+        <aspect name="org.gw.delorian.RecordedMethodAspect" />
+    </aspects>
+
+</aspectj>
